@@ -7,10 +7,7 @@ import instaloader
 app = Flask(__name__)
 CORS(app, origins='*')
 
-app_flask_insta = Blueprint('app_flask_insta', __name__)
-app_flask_yt = Blueprint('app_flask_yt', __name__)
-
-@app_flask_yt.route('/youtube', methods=['GET'])
+@app.route('/api/youtube', methods=['GET'])
 def get_video_youtube():
     try: 
         videoUrl = request.args.get('url')
@@ -64,7 +61,7 @@ def get_video_youtube():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app_flask_insta.route('/instagram', methods=['GET'])
+@app.route('/api/instagram', methods=['GET'])
 def get_post_instagram():
     try:
         postUrl = request.args.get('url')
@@ -95,9 +92,3 @@ def get_post_instagram():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 501
-
-app.register_blueprint(app_flask_insta, url_prefix='/api/v1')
-app.register_blueprint(app_flask_yt, url_prefix='/api/v1')
-
-if __name__ == "__main__":
-    app.run(debug=True)
