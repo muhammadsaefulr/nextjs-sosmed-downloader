@@ -45,7 +45,7 @@ const Youtube = () => {
     if (dataLinks.links !== "") {
       setIsloading(true);
       console.log(dataLinks);
-      fetch(`/api/v1/youtube?url=${dataLinks.links}&res=${dataLinks.res}`).then(
+      fetch(`/api/youtube?url=${dataLinks.links}&res=${dataLinks.res}`).then(
         async (res) => {
           setIsloading(false);
           if (res.status === 200) {

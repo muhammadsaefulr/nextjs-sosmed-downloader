@@ -17,20 +17,22 @@ export default function Component() {
   const [isLoading, setIsloading] = useState(false);
 
 
-  const handleSubmit = (e: React.FormEvent<EventTarget>) => {
+ const handleSubmit = (e: React.FormEvent<EventTarget>) => {
     e.preventDefault();
     if (dataLinks.links !== "") {
       setIsloading(true);
       console.log(dataLinks);
-      fetch(`/api/v1/instagram?url=${dataLinks.links}`).then(async (res) => {
-        setIsloading(false);
-        if (res.status === 200) {
-          setResponseRes(await res.json());
-          console.log(responseRes);
-        } else {
-          return <ToastAlert message={`${res.status} An Error Accoured !`} />;
+      fetch(`/api/instagram?url=${dataLinks.links}`).then(
+        async (res) => {
+          setIsloading(false);
+          if (res.status === 200) {
+            setResponseRes(await res.json());
+            console.log(responseRes);
+          } else {
+            return <ToastAlert message={`${res.status} An Error Accoured !`} />;
+          }
         }
-      });
+      );
     }
   };
 
