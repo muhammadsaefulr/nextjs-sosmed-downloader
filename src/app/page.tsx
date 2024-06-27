@@ -5,15 +5,13 @@ import { ToastAlert } from "./components/ToastAlert";
 interface ResponseRes {
   dataDetail: [
     {
-      postDesc: string;
-      postUrl: string;
+      postUrl: string[];
     }
   ];
 }
 
 export default function Component() {
   const [dataLinks, setDataLinks] = useState({ links: "", res: "" || "360p" });
-  const [responseRes, setResponseRes] = useState<ResponseRes>();
   const [isLoading, setIsloading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<EventTarget>) => {
@@ -24,8 +22,14 @@ export default function Component() {
       fetch(`/api/instagram?url=${dataLinks.links}`).then(async (res) => {
         setIsloading(false);
         if (res.status === 200) {
-          setResponseRes(await res.json());
-          console.log(responseRes);
+          const dataResp: ResponseRes = await res.json();
+
+          const link = document.createElement("a");
+          link.href = dataResp?.dataDetail[0].postUrl[0];
+          document.body.appendChild(link);
+          
+          link.click();
+          document.body.removeChild(link);
         } else {
           return <ToastAlert message={`${res.status} An Error Accoured !`} />;
         }
@@ -40,7 +44,7 @@ export default function Component() {
           Instagram Downloader
         </h1>
         <p className="text-muted-foreground md:text-xl">
-          Download your favorite YouTube videos with ease. Simply paste the
+          Download your favorite Instagram Reel with ease. Simply paste the
           video URL and click the download button.
         </p>
         <form onSubmit={handleSubmit}>
@@ -51,25 +55,13 @@ export default function Component() {
             className="p-2 rounded-md text-black outline-none"
             placeholder="Paste Text Link In here"
           ></input>
-          <button type="submit" className="p-2 mx-4 bg-blue-500 rounded-md">
+          <button
+            type="submit"
+            className="p-2 mt-4 mx-4 bg-blue-500 rounded-md"
+          >
             {isLoading ? "Loading.." : "Submit"}
           </button>
         </form>
-      </div>
-
-      <div
-        className={`${
-          responseRes ? "visible" : "hidden"
-        } w-full flex justify-center pt-8`}
-      >
-        <div className="">
-          <iframe src={responseRes?.dataDetail[0]?.postUrl} />
-          <a href={responseRes?.dataDetail[0].postUrl}>
-            <button className="p-2 mt-4 bg-blue-500 rounded-md">
-              Download
-            </button>
-          </a>
-        </div>
       </div>
 
       <div className="mt-12 max-w-2xl space-y-4">

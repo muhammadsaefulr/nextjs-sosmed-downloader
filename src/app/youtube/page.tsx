@@ -49,8 +49,15 @@ const Youtube = () => {
         async (res) => {
           setIsloading(false);
           if (res.status === 200) {
-            setResponseRes(await res.json());
-            console.log(responseRes);
+            const dataResp: ResponseRes = await res.json();
+            setResponseRes(dataResp);
+
+            const link = document.createElement("a");
+            link.href = dataResp?.dataDetail[0].urlLinks;
+            document.body.appendChild(link);
+
+            link.click();
+            document.body.removeChild(link);
           } else {
             return <ToastAlert message={`${res.status} An Error Accoured !`} />;
           }
@@ -61,17 +68,14 @@ const Youtube = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[100dvh] bg-background px-4 md:px-6">
-      <div className="space-y-6 text-center">
-        <h1 className="text-3xl font-bold text-center tracking-tighter md:text-5xl">
+      <div className="max-w-2xl space-y-6 text-center">
+        <h1 className="text-3xl font-bold tracking-tighter md:text-5xl">
           Youtube Downloader
         </h1>
-
-        <p className="pt-4 text-center lg:text-lg sm: text-sm">
-          Download your favorite YouTube videos with ease. Simply paste the
+        <p className="text-muted-foreground md:text-xl">
+          Download your favorite Youtube Videos with ease. Simply paste the
           video URL and click the download button.
         </p>
-      </div>
-      <div className="flex gap-x-2 justify-center pt-4 mx-auto">
         <form onSubmit={handleSubmit}>
           <input
             onChange={(e) =>
@@ -80,7 +84,10 @@ const Youtube = () => {
             className="p-2 rounded-md text-black outline-none"
             placeholder="Paste Text Link In here"
           ></input>
-          <button type="submit" className="p-2 mx-4 bg-blue-500 rounded-md">
+          <button
+            type="submit"
+            className="p-2 mt-4 mx-4 bg-blue-500 rounded-md"
+          >
             {isLoading ? "Loading.." : "Submit"}
           </button>
         </form>
@@ -105,20 +112,30 @@ const Youtube = () => {
         <h2 className="text-2xl font-bold">How to Use</h2>
         <ol className="space-y-2 text-muted-foreground">
           <li className="flex items-start gap-2">
-            <div className="mt-1 rounded-full text-black bg-white px-2 py-1 text-xs font-medium ">1</div>
+            <div className="mt-1 rounded-full text-black bg-white px-2 py-1 text-xs font-medium ">
+              1
+            </div>
             <div>Copy the URL of the YouTube video you want to download.</div>
           </li>
           <li className="flex items-start gap-2">
-            <div className="mt-1 rounded-full text-black bg-white px-2 py-1 text-xs font-medium ">2</div>
-            <div>Paste the URL into the input field on this page and click the "Download" button.</div>
+            <div className="mt-1 rounded-full text-black bg-white px-2 py-1 text-xs font-medium ">
+              2
+            </div>
+            <div>
+              Paste the URL into the input field on this page and click the
+              "Download" button.
+            </div>
           </li>
           <li className="flex items-start gap-2">
-            <div className="mt-1 rounded-full text-black bg-white px-2 py-1 text-xs font-medium ">3</div>
-            <div>Your video will start downloading automatically. Enjoy your video!</div>
+            <div className="mt-1 rounded-full text-black bg-white px-2 py-1 text-xs font-medium ">
+              3
+            </div>
+            <div>
+              Your video will start downloading automatically. Enjoy your video!
+            </div>
           </li>
         </ol>
       </div>
-      
     </div>
   );
 };
