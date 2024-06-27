@@ -1,11 +1,9 @@
 from flask import Flask
-from flask_cors import CORS
-from flask import Blueprint, jsonify, request
+from flask import  jsonify, request
 from pytube import YouTube
 import instaloader
 
 app = Flask(__name__)
-CORS(app, origins='*')
 
 @app.route('/api/youtube', methods=['GET'])
 def get_video_youtube():
