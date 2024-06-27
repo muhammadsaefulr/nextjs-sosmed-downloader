@@ -92,3 +92,6 @@ def get_post_instagram():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 501
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
