@@ -71,7 +71,7 @@ export default function Component() {
             <div className="mt-1 rounded-full text-black bg-white px-2 py-1 text-xs font-medium ">
               1
             </div>
-            <div>Copy the URL of the YouTube video you want to download.</div>
+            <div>Copy the URL of the Instagram Reels you want to download.</div>
           </li>
           <li className="flex items-start gap-2">
             <div className="mt-1 rounded-full text-black bg-white px-2 py-1 text-xs font-medium ">
