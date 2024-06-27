@@ -1,7 +1,8 @@
 from flask import Flask
 from flask import  jsonify, request
 from pytube import YouTube
-import instaloader
+import requests
+import re
 
 app = Flask(__name__)
 
@@ -63,33 +64,47 @@ def get_video_youtube():
 def get_post_instagram():
     try:
         postUrl = request.args.get('url')
-        loader = instaloader.Instaloader()
-        url = postUrl
-
-        shortcode = url.split('/')[4].split('?')[0]
-        post = instaloader.Post.from_shortcode(loader.context, shortcode)
         
-        username_url = post.owner_username
-        post_url = post.video_url
-        desc_url = post.caption
-        thumbnail_url = post.url
-
+        url = "https://v3.igdownloader.app/api/ajaxSearch"
+        dataPost = {
+           "recaptchaToken": "",
+           "q": postUrl,
+           "t": "media",
+           "lang": "en"
+        }
+        
+        result = [""]
+       
+        responseApi = requests.post(url, data=dataPost)
+        
+        if responseApi.status_code == 200:
+            regexResp = r'<a[^>]*onclick="ga\(\'send\', \'event\', \'home\', \'click_download_video\'\)"\s+href="([^"]+)"[^>]*>'
+            dataResReq = responseApi.json()
+            regexRespApiMatch = re.findall(regexResp, dataResReq['data'], re.IGNORECASE | re.DOTALL)
+            
+            if regexRespApiMatch: 
+                result = regexRespApiMatch
+            else:
+                result = []
+                
+        if not result:
+            return jsonify({
+                "message": "Result Is Null"
+            })
+                
         response = {
             'dataDetail': [
                 {
-                'username': username_url,
-                'postUrl': post_url,
-                'thumbnailUrl': thumbnail_url,
-                'postDesc': desc_url
+                'postUrl': result,
                 }
 
             ]
         }
-
+        
         return jsonify(response)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 501
 
-# if __name__ == "__main__":
-#     app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
