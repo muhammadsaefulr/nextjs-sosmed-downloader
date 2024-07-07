@@ -36,12 +36,8 @@ const Youtube = () => {
             const dataResp: ResponseRes = await res.json();
             setResponseRes(dataResp);
 
-            const link = document.createElement("a");
-            link.href = dataResp?.dataDetail[0].urlLinks;
-            document.body.appendChild(link);
-
-            link.click();
-            document.body.removeChild(link);
+            window.location.href = dataResp.dataDetail[0].urlLinks;
+           
           } else {
             return <ToastAlert message={`${res.status} An Error Accoured !`} />;
           }
@@ -70,6 +66,7 @@ const Youtube = () => {
           ></input>
           <button
             type="submit"
+            onClick={() => setDataLinks({...dataLinks, mp3: false})}
             className="p-2 mt-4 mx-2 bg-blue-500 rounded-md"
           >
             {isLoading ? "Loading.." : "video/mp4"}
@@ -82,21 +79,6 @@ const Youtube = () => {
             {isLoading ? "Loading.." : "audio/mp3"}
           </button>
         </form>
-      </div>
-
-      <div
-        className={`${
-          responseRes ? "visible" : "hidden"
-        } w-full flex justify-center pt-8`}
-      >
-        <div className="">
-          <iframe src={responseRes?.dataDetail[0]?.urlLinks} />
-          <a href={responseRes?.dataDetail[0].urlLinks}>
-            <button className="p-2 mt-4 bg-blue-500 rounded-md">
-              Download
-            </button>
-          </a>
-        </div>
       </div>
 
       <div className="mt-12 max-w-2xl space-y-8">

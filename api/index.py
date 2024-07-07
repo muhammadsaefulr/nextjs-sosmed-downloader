@@ -6,6 +6,7 @@ import re
 import threading
 import time
 import os
+import tempfile
 
 app = Flask(__name__)
 
@@ -32,24 +33,28 @@ def get_video_youtube():
         yt = YouTube(videoUrl)
         videoResValidate = None
         
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        save_dir = os.path.join(current_dir, '..', 'public')
+        save_dir = tempfile.gettempdir()
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
 
         if mp3:
             urlsmp3 = yt.streams.filter(only_audio=True).first()
             outFile = urlsmp3.download(output_path=save_dir)
-            newFile = os.path.join(save_dir, 'result_downloads.mp3')
+            newFile = os.path.join(save_dir, 'result_downloads' + '.mp3')
             os.rename(outFile, newFile)
+            
+            with open(newFile, 'rb') as file:
+                responseUpload = requests.post('https://file.io', files={'file': file})
+                upload_url = responseUpload.json().get('link')
+            
+            # resultsMp3 = requests.get(upload_url).json()
 
-            delay = 20
-            threading.Thread(target=remove_file_after_delay, args=(newFile, delay)).start()
+            threading.Thread(target=remove_file_after_delay, args=(newFile, 20)).start()
 
             mp3Res = { 
                 'dataDetail': [
                     {
-                        'urlLinks': 'result_downloads.mp3',
+                        'urlLinks': upload_url,
                     }
                 ]
             }
@@ -62,6 +67,7 @@ def get_video_youtube():
             os.rename(outFile, newFile)
 
             threading.Thread(target=remove_file_after_delay, args=(newFile, 20)).start()
+
 
             videoRes = { 
                 'dataDetail': [
@@ -157,5 +163,5 @@ def get_post_instagram():
     except Exception as e:
         return jsonify({'error': str(e)}), 501
 
-# if __name__ == "__main__":
-#     app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
