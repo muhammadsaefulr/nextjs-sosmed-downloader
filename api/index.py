@@ -11,14 +11,28 @@ def get_video_youtube():
     try: 
         videoUrl = request.args.get('url')
         videoRes = request.args.get('res')
+        mp3 = request.args.get('mp3')
 
         if(videoUrl == None):
             return jsonify({'message': 'Url Tidak Boleh Bernilai Null !'})
+        
 
         if(videoRes == None):
             return jsonify({'message': 'Argumen ?res= Tidak Boleh Kosong !'})
-
+        
+        yt = YouTube(videoUrl)
         videoResValidate = None
+        
+        if (mp3): 
+            urls = yt.streams.filter(only_audio=True).first().url
+            mp3Res = { 
+            'dataDetail': [
+                {
+                'urlLinks': urls,
+                }
+            ]}
+            
+            return jsonify(mp3Res), 200
 
         if videoRes == '360p':
             videoResValidate = '18'
@@ -28,8 +42,7 @@ def get_video_youtube():
             videoResValidate = '137'
         else:
             return jsonify({'message': 'Invalid Video Resolution'})
-
-        yt = YouTube(videoUrl)
+        
         get_urlLinks = yt.streams.get_by_itag(videoResValidate).url
 
         channelVideo = yt.channel_url

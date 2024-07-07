@@ -19,24 +19,8 @@ interface ResponseRes {
   ];
 }
 
-const initialDataDetail: ResponseRes = {
-  dataDetail: [
-    {
-      urlLinks: "",
-      videoRes: "",
-      videoResId: "",
-    },
-    {
-      videoChannel: "",
-      videoChannelId: "",
-      videoDesc: "",
-      videoTitle: "",
-    },
-  ],
-};
-
 const Youtube = () => {
-  const [dataLinks, setDataLinks] = useState({ links: "", res: "" || "360p" });
+  const [dataLinks, setDataLinks] = useState({ links: "", res: "" || "360p", mp3: false });
   const [responseRes, setResponseRes] = useState<ResponseRes>();
   const [isLoading, setIsloading] = useState(false);
 
@@ -45,7 +29,7 @@ const Youtube = () => {
     if (dataLinks.links !== "") {
       setIsloading(true);
       console.log(dataLinks);
-      fetch(`/api/youtube?url=${dataLinks.links}&res=${dataLinks.res}`).then(
+      fetch(`/api/youtube?url=${dataLinks.links}&res=${dataLinks.res}&mp3=${dataLinks.mp3}`).then(
         async (res) => {
           setIsloading(false);
           if (res.status === 200) {
@@ -86,9 +70,16 @@ const Youtube = () => {
           ></input>
           <button
             type="submit"
-            className="p-2 mt-4 mx-4 bg-blue-500 rounded-md"
+            className="p-2 mt-4 mx-2 bg-blue-500 rounded-md"
           >
-            {isLoading ? "Loading.." : "Submit"}
+            {isLoading ? "Loading.." : "video/mp4"}
+          </button>
+          <button
+            type="submit"
+            onClick={() => setDataLinks({...dataLinks, mp3: true})}
+            className="p-2 mt-4 bg-blue-500 rounded-md"
+          >
+            {isLoading ? "Loading.." : "audio/mp3"}
           </button>
         </form>
       </div>
