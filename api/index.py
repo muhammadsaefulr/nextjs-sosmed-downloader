@@ -3,8 +3,17 @@ from flask import  jsonify, request
 from pytube import YouTube
 import requests
 import re
+import threading
+import time
+import os
 
 app = Flask(__name__)
+
+def remove_file_after_delay(file_path, delay):
+    time.sleep(delay)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"File {file_path} telah dihapus setelah {delay} detik.")
 
 @app.route('/api/youtube', methods=['GET'])
 def get_video_youtube():
@@ -23,16 +32,45 @@ def get_video_youtube():
         yt = YouTube(videoUrl)
         videoResValidate = None
         
-        if (mp3): 
-            urls = yt.streams.filter(only_audio=True).first().url
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        save_dir = os.path.join(current_dir, '..', 'public')
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        if mp3:
+            urlsmp3 = yt.streams.filter(only_audio=True).first()
+            outFile = urlsmp3.download(output_path=save_dir)
+            newFile = os.path.join(save_dir, 'result_downloads.mp3')
+            os.rename(outFile, newFile)
+
+            delay = 20
+            threading.Thread(target=remove_file_after_delay, args=(newFile, delay)).start()
+
             mp3Res = { 
-            'dataDetail': [
-                {
-                'urlLinks': urls,
-                }
-            ]}
-            
+                'dataDetail': [
+                    {
+                        'urlLinks': 'result_downloads.mp3',
+                    }
+                ]
+            }
             return jsonify(mp3Res), 200
+
+        stream = yt.streams.filter(res=videoRes).first()
+        if stream:
+            outFile = stream.download(output_path=save_dir)
+            newFile = os.path.join(save_dir, 'result_downloads.mp4')
+            os.rename(outFile, newFile)
+
+            threading.Thread(target=remove_file_after_delay, args=(newFile, 20)).start()
+
+            videoRes = { 
+                'dataDetail': [
+                    {
+                        'urlLinks': newFile,
+                    }
+                ]
+            }
+            return jsonify(videoRes), 200
 
         if videoRes == '360p':
             videoResValidate = '18'
