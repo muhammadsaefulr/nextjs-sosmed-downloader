@@ -25,19 +25,29 @@ def get_video_youtube():
 
         if(videoUrl == None):
             return jsonify({'message': 'Url Tidak Boleh Bernilai Null !'})
-        
 
         if(videoRes == None):
             return jsonify({'message': 'Argumen ?res= Tidak Boleh Kosong !'})
-        
-        yt = YouTube(videoUrl)
+
         videoResValidate = None
+
+        if videoRes == '360p':
+            videoResValidate = '18'
+        elif videoRes == '720p':
+            videoResValidate = '22'
+        elif videoRes == '1080p':
+            videoResValidate = '137'
+        else:
+            return jsonify({'message': 'Invalid Video Resolution'})
+
+        yt = YouTube(videoUrl)
+        get_urlLinks = yt.streams.get_by_itag(videoResValidate).url
         
         save_dir = tempfile.gettempdir()
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-
-        if mp3:
+        
+        if mp3 == "true":
             urlsmp3 = yt.streams.filter(only_audio=True).first()
             outFile = urlsmp3.download(output_path=save_dir)
             newFile = os.path.join(save_dir, 'result_downloads' + '.mp3')
@@ -60,39 +70,12 @@ def get_video_youtube():
             }
             return jsonify(mp3Res), 200
 
-        stream = yt.streams.filter(res=videoRes).first()
-        if stream:
-            outFile = stream.download(output_path=save_dir)
-            newFile = os.path.join(save_dir, 'result_downloads.mp4')
-            os.rename(outFile, newFile)
-
-            threading.Thread(target=remove_file_after_delay, args=(newFile, 20)).start()
-
-
-            videoRes = { 
-                'dataDetail': [
-                    {
-                        'urlLinks': newFile,
-                    }
-                ]
-            }
-            return jsonify(videoRes), 200
-
-        if videoRes == '360p':
-            videoResValidate = '18'
-        elif videoRes == '720p':
-            videoResValidate = '22'
-        elif videoRes == '1080p':
-            videoResValidate = '137'
-        else:
-            return jsonify({'message': 'Invalid Video Resolution'})
-        
-        get_urlLinks = yt.streams.get_by_itag(videoResValidate).url
 
         channelVideo = yt.channel_url
         channelVideoId = yt.channel_id
         videoTitle = yt.title
-        videoDesc = yt.captions.get_by_language_code('en').generate_srt_captions() if yt.captions.get_by_language_code('en') else 'No captions available'
+        videoDesc = yt.captions.get_by_language_code('en')
+
         response = { 
             'dataDetail': [
                 {
@@ -110,12 +93,12 @@ def get_video_youtube():
         }
 
         if get_urlLinks == None:
-            return jsonify({'message': 'Terjadi Kesalahan Saat Mengurai Data !'}), 500
+            return jsonify({'message': 'Terjadi Kesalahan Saat Mengurai Data !'})
         else:
             return jsonify(response)
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)})
 
 @app.route('/api/instagram', methods=['GET'])
 def get_post_instagram():
@@ -162,3 +145,6 @@ def get_post_instagram():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 501
+    
+if __name__ == "__main__":
+    app.run(debug=True)
