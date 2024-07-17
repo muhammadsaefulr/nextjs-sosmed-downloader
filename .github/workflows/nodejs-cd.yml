@@ -19,6 +19,7 @@ jobs:
             username: ${{ secrets.SSH_USER }}
             password: ${{ secrets.SSH_PASS }}
             port: ${{ secrets.SSH_PORT }}
+            key: ${{ secrets.DEPLOY_KEY }}
             script: |
               cd ~/deployment
               git pull origin main
