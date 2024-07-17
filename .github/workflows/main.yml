@@ -38,7 +38,7 @@ jobs:
         with:
           remote_path: /root/deployment
           remote_host: msaepul07.gnu.my.id
-          remote_port: 22
+          remote_port: 11500
           remote_user: ${{ secrets.SSH_USER }}
           remote_key: ${{ secrets.DEPLOY_KEY }}
           remote_key_pass: ${{ secrets.SSH_PASS }}
