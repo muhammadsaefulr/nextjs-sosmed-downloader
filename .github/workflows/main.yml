@@ -36,9 +36,9 @@ jobs:
         # uses: Burnett01/rsync-deployments@796cf0d5e4b535745ce49d7429f77cf39e25ef39
         uses: Burnett01/rsync-deployments@7.0.1
         with:
-          remote_path: /home/msaepul07150/deployments
+          remote_path: /root/deployment
           remote_host: msaepul07.gnu.my.id
-          remote_port: 11500
+          remote_port: 22
           remote_user: ${{ secrets.SSH_USER }}
           remote_key: ${{ secrets.DEPLOY_KEY }}
           remote_key_pass: ${{ secrets.SSH_PASS }}
